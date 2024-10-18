@@ -35,14 +35,18 @@ def is_valid_netcdf(file_path):
     engines = ['netcdf4', 'scipy']
     for engine in engines:
         try:
-            ds = xr.open_dataset(file_path, engine=engine)
-            ds.close()
+            with xr.open_dataset(file_path, engine=engine) as ds:
+                # Check for duplicate index values
+                for dim in ds.dims:
+                    if ds[dim].to_index().has_duplicates:
+                        logging.warning(f"Duplicate values found in dimension '{
+                                        dim}' in file: {file_path}")
+                        return False
             logging.info(f"Valid NetCDF file: {file_path} (engine: {engine})")
             return True
         except Exception as e:
             logging.warning(f"Failed to open {
                             file_path} with engine {engine}: {e}")
-            continue
     logging.error(f"Invalid NetCDF file: {file_path}")
     return False
 
@@ -63,8 +67,8 @@ if not valid_file_list:
     print("No valid NetCDF files found.")
     exit(1)
 
-# Optionally process files in batches to limit open file handles
-batch_size = 500  # Adjust this based on your system's limits
+# Process files in batches to limit open file handles
+batch_size = 100  # Reduced batch size to prevent memory issues
 batches = [valid_file_list[i:i + batch_size]
            for i in range(0, len(valid_file_list), batch_size)]
 
@@ -78,13 +82,20 @@ for batch_idx, batch_files in enumerate(batches):
         with ProgressBar():
             ds = xr.open_mfdataset(
                 batch_files,
-                combine='by_coords',
+                combine='nested',  # Changed from 'by_coords' to 'nested'
+                concat_dim='time',  # Specify the dimension to concatenate along
                 chunks='auto',
                 parallel=True,
                 engine='netcdf4'
             )
+            # Perform any necessary adjustments to resolve conflicts
+            # Reset and drop potentially problematic indexes
+            ds = ds.reset_index(['x', 'y'], drop=True)
+            ds = ds.assign_coords(
+                x=('x', range(ds.sizes['x'])), y=('y', range(ds.sizes['y'])))
+
             # Trigger computation to catch any errors
-            ds.load()
+            ds = ds.compute()
         merged_datasets.append(ds)
         logging.info(f"Batch {batch_idx + 1} merged successfully.")
     except Exception as e:
@@ -93,12 +104,12 @@ for batch_idx, batch_files in enumerate(batches):
         # Optionally, identify problematic files within the batch
         for file in batch_files:
             try:
-                ds = xr.open_dataset(file, engine='netcdf4')
-                ds.close()
+                with xr.open_dataset(file, engine='netcdf4') as ds:
+                    pass
             except Exception as file_e:
                 logging.error(f"Problem with file {file}: {file_e}")
                 print(f"Problem with file {file}: {file_e}")
-        exit(1)
+        continue  # Skip this batch and continue with the next one
 
 # Combine all batches into a single dataset
 logging.info("Combining all batches into a single dataset.")
@@ -106,8 +117,7 @@ print("Combining all batches into a single dataset.")
 
 try:
     with ProgressBar():
-        combined_ds = xr.combine_by_coords(
-            merged_datasets, combine_attrs='override')
+        combined_ds = xr.concat(merged_datasets, dim='time')
     logging.info("All batches combined successfully.")
 except Exception as e:
     logging.error(f"Error during final combination: {e}")
