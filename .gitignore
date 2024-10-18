@@ -5,3 +5,5 @@
 **/._.DS_Store
 
 output_csv/
+
+data/merged_data.csv
