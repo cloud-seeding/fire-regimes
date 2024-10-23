@@ -39,14 +39,12 @@ def is_valid_netcdf(file_path):
                 # Check for duplicate index values
                 for dim in ds.dims:
                     if ds[dim].to_index().has_duplicates:
-                        logging.warning(f"Duplicate values found in dimension '{
-                                        dim}' in file: {file_path}")
+                        logging.warning(f"Duplicate values found in dimension '{dim}' in file: {file_path}")
                         return False
             logging.info(f"Valid NetCDF file: {file_path} (engine: {engine})")
             return True
         except Exception as e:
-            logging.warning(f"Failed to open {
-                            file_path} with engine {engine}: {e}")
+            logging.warning(f"Failed to open {file_path} with engine {engine}: {e}")
     logging.error(f"Invalid NetCDF file: {file_path}")
     return False
 
@@ -59,8 +57,7 @@ for idx, file_path in enumerate(file_list):
     else:
         print(f"on {idx}: Skipping invalid file: {file_path}")
 
-logging.info(f"Validation complete. {
-             len(valid_file_list)} valid files found out of {len(file_list)}.")
+logging.info(f"Validation complete. {len(valid_file_list)} valid files found out of {len(file_list)}.")
 
 if not valid_file_list:
     logging.error("No valid NetCDF files found. Exiting.")
