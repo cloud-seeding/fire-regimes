@@ -8,3 +8,4 @@ output_csv/
 
 data/merged_data.csv
 data/merged_output.csv
+data/merged_output_outliers.csv
