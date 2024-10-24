@@ -1,0 +1,94 @@
+2024-10-24 16:37:14,353 - INFO - Using device: cuda
+2024-10-24 16:37:47,084 - INFO - Data loaded successfully. Input dimension: (174,)
+2024-10-24 16:37:47,314 - INFO - Training model with latent_dim=32
+2024-10-24 16:37:47,352 - INFO - Starting training for latent_dim=32
+2024-10-24 16:38:52,095 - WARNING - Epoch 1: Loss value is None
+Epoch: 1 Training loss: 1.3320
+2024-10-24 16:39:57,401 - WARNING - Epoch 2: Loss value is None
+Epoch: 2 Training loss: 1.0266
+2024-10-24 16:41:02,493 - WARNING - Epoch 3: Loss value is None
+Epoch: 3 Training loss: 1.0268
+2024-10-24 16:42:07,882 - WARNING - Epoch 4: Loss value is None
+Epoch: 4 Training loss: 1.0235
+2024-10-24 16:43:13,539 - WARNING - Epoch 5: Loss value is None
+Epoch: 5 Training loss: 1.0230
+2024-10-24 16:44:19,311 - WARNING - Epoch 6: Loss value is None
+Epoch: 6 Training loss: 1.0246
+2024-10-24 16:45:24,883 - WARNING - Epoch 7: Loss value is None
+Epoch: 7 Training loss: 1.0222
+2024-10-24 16:46:29,891 - WARNING - Epoch 8: Loss value is None
+Epoch: 8 Training loss: 1.0220
+2024-10-24 16:47:35,108 - WARNING - Epoch 9: Loss value is None
+Epoch: 9 Training loss: 1.0240
+2024-10-24 16:48:40,606 - WARNING - Epoch 10: Loss value is None
+Epoch: 10 Training loss: 1.0215
+2024-10-24 16:48:40,607 - ERROR - No valid training losses recorded, model not saved
+2024-10-24 16:48:40,607 - INFO - Training model with latent_dim=16
+2024-10-24 16:48:40,611 - INFO - Starting training for latent_dim=16
+2024-10-24 16:49:45,739 - WARNING - Epoch 1: Loss value is None
+Epoch: 1 Training loss: 1.3087
+2024-10-24 16:50:50,543 - WARNING - Epoch 2: Loss value is None
+Epoch: 2 Training loss: 1.0220
+2024-10-24 16:51:55,067 - WARNING - Epoch 3: Loss value is None
+Epoch: 3 Training loss: 1.0212
+2024-10-24 16:52:59,740 - WARNING - Epoch 4: Loss value is None
+Epoch: 4 Training loss: 1.0206
+2024-10-24 16:54:04,243 - WARNING - Epoch 5: Loss value is None
+Epoch: 5 Training loss: 1.0203
+2024-10-24 16:55:09,451 - WARNING - Epoch 6: Loss value is None
+Epoch: 6 Training loss: 1.0200
+2024-10-24 16:56:14,434 - WARNING - Epoch 7: Loss value is None
+Epoch: 7 Training loss: 1.0199
+2024-10-24 16:57:19,239 - WARNING - Epoch 8: Loss value is None
+Epoch: 8 Training loss: 1.0198
+2024-10-24 16:58:23,945 - WARNING - Epoch 9: Loss value is None
+Epoch: 9 Training loss: 1.0197
+2024-10-24 16:59:28,200 - WARNING - Epoch 10: Loss value is None
+Epoch: 10 Training loss: 1.0197
+2024-10-24 16:59:28,200 - ERROR - No valid training losses recorded, model not saved
+2024-10-24 16:59:28,200 - INFO - Training model with latent_dim=8
+2024-10-24 16:59:28,203 - INFO - Starting training for latent_dim=8
+2024-10-24 17:00:32,976 - WARNING - Epoch 1: Loss value is None
+Epoch: 1 Training loss: 1.2642
+2024-10-24 17:01:37,282 - WARNING - Epoch 2: Loss value is None
+Epoch: 2 Training loss: 1.0201
+2024-10-24 17:02:41,942 - WARNING - Epoch 3: Loss value is None
+Epoch: 3 Training loss: 1.0195
+2024-10-24 17:03:46,708 - WARNING - Epoch 4: Loss value is None
+Epoch: 4 Training loss: 1.0192
+2024-10-24 17:04:51,005 - WARNING - Epoch 5: Loss value is None
+Epoch: 5 Training loss: 1.0192
+2024-10-24 17:05:55,563 - WARNING - Epoch 6: Loss value is None
+Epoch: 6 Training loss: 1.0190
+2024-10-24 17:06:59,967 - WARNING - Epoch 7: Loss value is None
+Epoch: 7 Training loss: 1.0189
+2024-10-24 17:08:04,627 - WARNING - Epoch 8: Loss value is None
+Epoch: 8 Training loss: 1.0188
+2024-10-24 17:09:09,096 - WARNING - Epoch 9: Loss value is None
+Epoch: 9 Training loss: 1.0187
+2024-10-24 17:10:14,015 - WARNING - Epoch 10: Loss value is None
+Epoch: 10 Training loss: 1.0186
+2024-10-24 17:10:14,015 - ERROR - No valid training losses recorded, model not saved
+2024-10-24 17:10:14,015 - INFO - Training model with latent_dim=4
+2024-10-24 17:10:14,019 - INFO - Starting training for latent_dim=4
+2024-10-24 17:11:18,588 - WARNING - Epoch 1: Loss value is None
+Epoch: 1 Training loss: 1.2275
+2024-10-24 17:12:23,040 - WARNING - Epoch 2: Loss value is None
+Epoch: 2 Training loss: 1.0189
+2024-10-24 17:13:27,656 - WARNING - Epoch 3: Loss value is None
+Epoch: 3 Training loss: 1.0186
+2024-10-24 17:14:32,521 - WARNING - Epoch 4: Loss value is None
+Epoch: 4 Training loss: 1.0184
+2024-10-24 17:15:37,620 - WARNING - Epoch 5: Loss value is None
+Epoch: 5 Training loss: 1.0184
+2024-10-24 17:16:42,236 - WARNING - Epoch 6: Loss value is None
+Epoch: 6 Training loss: 1.0183
+2024-10-24 17:17:47,081 - WARNING - Epoch 7: Loss value is None
+Epoch: 7 Training loss: 1.0182
+2024-10-24 17:18:51,989 - WARNING - Epoch 8: Loss value is None
+Epoch: 8 Training loss: 1.0181
+2024-10-24 17:19:56,643 - WARNING - Epoch 9: Loss value is None
+Epoch: 9 Training loss: 1.0181
+2024-10-24 17:21:01,433 - WARNING - Epoch 10: Loss value is None
+Epoch: 10 Training loss: 1.0181
+2024-10-24 17:21:01,433 - ERROR - No valid training losses recorded, model not saved
