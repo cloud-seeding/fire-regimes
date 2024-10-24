@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import pyroved as pv
 import torch
+from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import normalize
 
 # Set up logging
@@ -17,12 +18,37 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+class EarlyStopping:
+    """Early stopping handler to prevent overfitting."""
+
+    def __init__(self, patience=10, min_delta=0):
+        self.patience = patience
+        self.min_delta = min_delta
+        self.counter = 0
+        self.best_loss = None
+        self.early_stop = False
+
+    def __call__(self, val_loss):
+        if self.best_loss is None:
+            self.best_loss = val_loss
+        elif val_loss > self.best_loss - self.min_delta:
+            self.counter += 1
+            if self.counter >= self.patience:
+                self.early_stop = True
+        else:
+            self.best_loss = val_loss
+            self.counter = 0
+
+        return self.early_stop
+
+
 class VAETrainer:
-    def __init__(self, data_path: str, output_dir: str = "models"):
+    def __init__(self, data_path: str, output_dir: str = "models", val_split: float = 0.2):
         """Initialize VAE trainer with data path and output directory."""
         self.data_path = Path(data_path)
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(exist_ok=True)
+        self.val_split = val_split
 
         # Set device
         self.device = torch.device(
@@ -49,10 +75,17 @@ class VAETrainer:
             X = df[~np.isnan(df).any(axis=1)]
             X = normalize(X, axis=0)
 
-            # Convert to torch tensor
-            train_data = torch.from_numpy(X).float().to(self.device)
+            # Split data into train and validation sets
+            X_train, X_val = train_test_split(
+                X, test_size=self.val_split, random_state=42)
+
+            # Convert to torch tensors
+            train_data = torch.from_numpy(X_train).float().to(self.device)
+            val_data = torch.from_numpy(X_val).float().to(self.device)
+
             self.train_loader = pv.utils.init_dataloader(
                 train_data, batch_size=64)
+            self.val_loader = pv.utils.init_dataloader(val_data, batch_size=64)
             self.in_dim = (X.shape[1],)
 
             logger.info(
@@ -62,9 +95,20 @@ class VAETrainer:
             logger.error(f"Error loading data: {str(e)}")
             raise
 
-    def train(self, latent_dim: int, n_epochs: int = 100):
-        """Train VAE model with specified latent dimension."""
+    def validate(self, trainer, model):
+        """Run validation step."""
+        model.eval()
+        total_val_loss = 0
+        with torch.no_grad():
+            for batch in self.val_loader:
+                loss = trainer.loss_function(model, batch)
+                total_val_loss += loss.item()
+        return total_val_loss / len(self.val_loader)
+
+    def train(self, latent_dim: int, n_epochs: int = 100, patience: int = 5, min_delta: float = 0.001):
+        """Train VAE model with specified latent dimension and early stopping."""
         save_path = self.output_dir / f"vae-{latent_dim}.pth"
+        best_model_path = self.output_dir / f"vae-{latent_dim}_best.pth"
 
         try:
             # Initialize model
@@ -76,20 +120,39 @@ class VAETrainer:
             ).to(self.device)
 
             trainer = pv.trainers.SVItrainer(vae)
+            early_stopping = EarlyStopping(
+                patience=patience, min_delta=min_delta)
+            best_val_loss = float('inf')
 
             logger.info(f"Starting training for latent_dim={latent_dim}")
 
             # Training loop
             for epoch in range(n_epochs):
-                loss = trainer.step(self.train_loader)
-                if (epoch + 1) % 10 == 0:  # Log every 10 epochs
+                # Training step
+                train_loss = trainer.step(self.train_loader)
+
+                # Validation step
+                val_loss = self.validate(trainer, vae)
+
+                if val_loss < best_val_loss:
+                    best_val_loss = val_loss
+                    torch.save(vae.state_dict(), best_model_path)
+
+                if (epoch + 1) % 5 == 0:  # Log every 5 epochs
                     logger.info(
-                        f"Epoch {epoch+1}/{n_epochs}, Loss: {loss:.4f}")
+                        f"Epoch {epoch+1}/{n_epochs}, Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}")
+
                 trainer.print_statistics()
 
-            # Save model
+                # Early stopping check
+                if early_stopping(val_loss):
+                    logger.info(f"Early stopping triggered at epoch {epoch+1}")
+                    break
+
+            # Load best model and save as final model
+            vae.load_state_dict(torch.load(best_model_path))
             torch.save(vae.state_dict(), save_path)
-            logger.info(f"Model saved to {save_path}")
+            logger.info(f"Best model saved to {save_path}")
 
         except Exception as e:
             logger.error(f"Error during training: {str(e)}")
@@ -104,7 +167,7 @@ def main():
 
     try:
         # Initialize trainer
-        trainer = VAETrainer(data_path, output_dir)
+        trainer = VAETrainer(data_path, output_dir, val_split=0.2)
 
         # Load and preprocess data
         trainer.load_data()
@@ -112,7 +175,8 @@ def main():
         # Train models with different latent dimensions
         for latent_dim in latent_dims:
             logger.info(f"Training model with latent_dim={latent_dim}")
-            trainer.train(latent_dim)
+            trainer.train(latent_dim, n_epochs=100,
+                          patience=10, min_delta=0.001)
 
     except Exception as e:
         logger.error(f"Training failed: {str(e)}")
