@@ -9,7 +9,10 @@ from mpl_toolkits.mplot3d import Axes3D
 # #p = np.load('../data/processed.npy')
 # h = np.load('../data/haines.npy')
 
-data = pd.read_csv('~/Desktop/columbia/capstone/fire-regimes/data/posneg.csv')
+positives = pd.read_csv('~/Desktop/columbia/capstone/fire-regimes/data/t-1.csv')
+negatives = pd.read_csv('~/Desktop/columbia/capstone/fire-regimes/data/negatives-same-loc.csv')
+
+data = pd.concat([positives,negatives])
 data = data[~np.isnan(data).any(axis=1)]
 fire = data['fire']
 data = data.drop(columns=['fire'])
@@ -26,6 +29,6 @@ X_tsne = tsne.fit_transform(random_sample)
 # fig = plt.figure()
 # ax = fig.add_subplot(111, projection='3d')
 
-plt.scatter(X_tsne[:, 0], X_tsne[:, 1],c=fire,alpha=0.4)
+plt.scatter(X_tsne[:, 0], X_tsne[:, 1],c=fire,alpha=0.5)
 plt.colorbar()
-plt.savefig('posneg-tsne.png')
+plt.savefig('plots/tsne-t1.png')
