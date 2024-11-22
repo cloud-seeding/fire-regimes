@@ -1,18 +1,31 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from sklearn.manifold import TSNE
 from sklearn.cluster import KMeans
 from mpl_toolkits.mplot3d import Axes3D
 
-l = np.load('../data/latent-16.npy')[10000:25000]
-# kmeans = KMeans(n_clusters=4,random_state=0).fit(l)
+# l = np.load('../data/latent-8.npy')
+# #p = np.load('../data/processed.npy')
+# h = np.load('../data/haines.npy')
 
-tsne = TSNE(n_components=2, random_state=1)
-X_tsne = tsne.fit_transform(l)
+data = pd.read_csv('~/Desktop/columbia/capstone/fire-regimes/data/posneg.csv')
+data = data[~np.isnan(data).any(axis=1)]
+fire = data['fire']
+data = data.drop(columns=['fire'])
 
-fig = plt.figure()
-#ax = fig.add_subplot(111, projection='3d')
+random_indices = np.random.choice(data.index, size=10000, replace=False)
+random_sample = data.loc[random_indices]
+fire = fire.loc[random_indices]
+# haines = h[random_indices]
+#kmeans = KMeans(n_clusters=6,random_state=0).fit(random_sample)
 
-plt.scatter(X_tsne[:, 0], X_tsne[:, 1])
+tsne = TSNE(n_components=2, random_state=5)
+X_tsne = tsne.fit_transform(random_sample)
 
-plt.savefig('tsne_plot2d-noclust.png')
+# fig = plt.figure()
+# ax = fig.add_subplot(111, projection='3d')
+
+plt.scatter(X_tsne[:, 0], X_tsne[:, 1],c=fire,alpha=0.4)
+plt.colorbar()
+plt.savefig('posneg-tsne.png')

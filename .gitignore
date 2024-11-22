@@ -11,3 +11,7 @@ data/merged_output.csv
 data/merged_output_outliers.csv
 **.png
 **.npy
+data/negatives-same-loc.csv
+data/positives.csv
+data/posneg.csv
+data/positives-with-meta.csv
